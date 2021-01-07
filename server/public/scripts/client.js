@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
   console.log('jQuery sourced.');
   refreshBooks();
@@ -6,9 +7,10 @@ $(document).ready(function () {
 
 function addClickHandlers() {
   $('#submitBtn').on('click', handleSubmit);
-  $('#bookShelf').on('click', '.deleteBtn', deleteBook);
-
+  
   // TODO - Add code for edit & delete buttons
+  $('#bookShelf').on('click', '.deleteBtn', deleteBook);
+  $('#bookShelf').on('click', '.updateBtn', markAsRead);
 }
 
 function handleSubmit() {
@@ -59,7 +61,9 @@ function renderBooks(books) {
     $tr.data('book', book);
     $tr.append(`<td>${book.title}</td>`);
     $tr.append(`<td>${book.author}</td>`);
+    $tr.append(`<td>${book.status}</td>`);
     $tr.append(`<td><button class="deleteBtn">Delete</button></td>`);
+    $tr.append(`<td><button class="updateBtn">Read</button></td>`);
     $('#bookShelf').append($tr);
   }
 }
@@ -79,18 +83,24 @@ function deleteBook() {
   })
 }
 
-// function deleteSong(){
-//   console.log('clicked a delete button!');
-//   const id = $(this).closest('tr').data('id');
-//   console.log(id);
+function markAsRead(){
+  console.log('clicked Read');
+  const id = $(this).closest('tr').data('id');
 
-//   $.ajax({
-//       type: 'DELETE',
-//       url: `/musicLibrary/${id}`
-//   }).then(function (response){
-//       getMusicData();
+  const dataToSend = {
+    changeStatus: $(this).text()
+  }
 
-//   }).catch(function(error){
-//       alert('error in delete');
-//   })
-// }
+  $.ajax({
+    type: 'PUT',
+    url: `/books/${id}`,
+    data: dataToSend
+  }).then(function (response){
+    console.log('updated');
+    refreshBooks();
+  }).catch(function(error){
+    alert('error updating song');
+  })
+}
+
+
